@@ -1,0 +1,85 @@
+package com.waracle.cakes.controller;
+
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.util.List;
+import java.util.Optional;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.waracle.cakes.entity.Cake;
+import com.waracle.cakes.service.CakesService;
+
+@WebMvcTest(CakesController.class)
+public class CakesControllerTest {
+
+	@MockBean
+	private CakesService cakesService;
+
+	@Autowired
+	private MockMvc mockMvc;
+
+	@Autowired
+	private ObjectMapper objectMapper;
+
+	@Test
+	public void should_add_cake() throws Exception {
+		Cake cake = Cake.builder().id(1L).title("New Cake").description("new cake description")
+				.image("/path/to/new/image").build();
+		when(cakesService.saveCake(cake)).thenReturn(cake);
+		mockMvc.perform(
+				post("/addCake").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(cake)))
+				.andExpect(status().isOk()).andDo(print());
+	}
+
+	@Test
+	public void should_get_cake_by_id() throws Exception {
+		long id = 1L;
+		Cake cake = Cake.builder().id(1L).title("New Cake").description("new cake description")
+				.image("/path/to/new/image").build();
+		when(cakesService.getCakeById(id)).thenReturn(Optional.of(cake));
+		mockMvc.perform(get("/cakes/{id}", id)).andExpect(status().isOk()).andExpect(jsonPath("$.id").value(id))
+				.andExpect(jsonPath("$.title").value(cake.getTitle()))
+				.andExpect(jsonPath("$.description").value(cake.getDescription()))
+				.andExpect(jsonPath("$.image").value(cake.getImage())).andDo(print());
+	}
+
+	@Test
+	public void should_get_all_cakes() throws Exception {
+
+		Cake cake1 = Cake.builder().id(1L).title("New Cake1").description("new cake1 description")
+				.image("/path/to/new/image1").build();
+		Cake cake2 = Cake.builder().id(2L).title("New Cake2").description("new cake2 description")
+				.image("/path/to/new/image2").build();
+
+		when(cakesService.getCakes()).thenReturn(Optional.of(List.of(cake1, cake2)));
+		mockMvc.perform(get("/cakes").accept(MediaType.APPLICATION_JSON)).andDo(print()).andExpect(status().isOk())
+				.andExpect(jsonPath("$.size()").value(2));
+	}
+
+	@Test
+	public void should_update_a_cake_matching_id() throws Exception {
+
+		Cake cake = Cake.builder().id(1L).title("Cake").description("cake description").image("/path/to/new/image1")
+				.build();
+		Cake updatedCake = Cake.builder().id(1L).title("Updated Cake").description("updated cake description")
+				.image("/path/to/new/image2").build();
+
+		when(cakesService.updateCake(cake)).thenReturn(updatedCake);
+		mockMvc.perform(put("/updateCake").contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(cake))).andExpect(status().isOk()).andDo(print());
+	}
+
+}
