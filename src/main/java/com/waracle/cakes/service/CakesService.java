@@ -8,11 +8,12 @@ import org.springframework.stereotype.Service;
 
 import com.waracle.cakes.entity.Cake;
 import com.waracle.cakes.repository.CakesRepository;
+import com.waracle.cakes.service.interfaces.CakeServiceInterace;
 
 import jakarta.persistence.EntityNotFoundException;
 
 @Service
-public class CakesService {
+public class CakesService implements CakeServiceInterace {
 
 	@Autowired
 	private CakesRepository repo;
