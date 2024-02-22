@@ -21,9 +21,9 @@ public class CakesRepositoryTest {
 	private CakesRepository repository;
 
 	@Test
-	public void should_find_no_cakes_if_repository_is_empty() {
+	public void should_find_cake_records_that_were_inserted_at_init() {
 		Iterable<Cake> cakes = repository.findAll();
-		assertThat(cakes).isEmpty();
+		assertThat(cakes).size().isNotZero();
 	}
 
 	@Test
@@ -51,7 +51,7 @@ public class CakesRepositoryTest {
 
 		List<Cake> cakes = repository.findAll();
 
-		assertThat(cakes).hasSize(3).contains(cake1, cake2, cake3);
+		assertThat(cakes).contains(cake1, cake2, cake3);
 	}
 
 	@Test
@@ -112,7 +112,7 @@ public class CakesRepositoryTest {
 
 		repository.deleteById(cake2.getId());
 		List<Cake> cakes = repository.findAll();
-		assertThat(cakes).hasSize(2).contains(cake1, cake3);
+		assertThat(cakes).contains(cake1, cake3);
 	}
 
 }

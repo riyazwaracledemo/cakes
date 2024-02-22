@@ -33,15 +33,12 @@ public class CakesServiceTest {
 
 	@Test
 	public void should_save_one_cake() {
-		// Arrange
 		final var cakeToSave = Cake.builder().title("New Cake").description("new cake description")
 				.image("path/to/new/image").build();
 		when(repo.save(any(Cake.class))).thenReturn(cakeToSave);
 
-		// Act
 		final var actual = service.saveCake(new Cake());
 
-		// Assert
 		assertThat(actual).usingRecursiveComparison().isEqualTo(cakeToSave);
 		verify(repo, times(1)).save(any(Cake.class));
 		verifyNoMoreInteractions(repo);
@@ -49,15 +46,12 @@ public class CakesServiceTest {
 
 	@Test
 	public void should_find_and_return_one_cake() {
-		// Arrange
 		final var expectedCake = Cake.builder().title("New Cake").description("new cake description")
 				.image("path/to/new/image").build();
 		when(repo.findById(anyLong())).thenReturn(Optional.of(expectedCake));
 
-		// Act
 		final var actual = service.getCakeById(getRandomLong());
 
-		// Assert
 		assertThat(actual).usingRecursiveComparison().isEqualTo(Optional.of(expectedCake));
 		verify(repo, times(1)).findById(anyLong());
 		verifyNoMoreInteractions(repo);
@@ -65,10 +59,8 @@ public class CakesServiceTest {
 
 	@Test
 	public void should_find_and_return_all_Cake() {
-		// Arrange
 		when(repo.findAll()).thenReturn(List.of(new Cake(), new Cake()));
 
-		// Act & Assert
 		assertThat(service.getCakes().get().size() == 2);
 		verify(repo, times(1)).findAll();
 		verifyNoMoreInteractions(repo);
@@ -76,10 +68,8 @@ public class CakesServiceTest {
 
 	@Test
 	public void should_delete_one_Cake() {
-		// Arrange
 		doNothing().when(repo).deleteById(anyLong());
 
-		// Act & Assert
 		service.deleteCake(getRandomLong());
 		verify(repo, times(1)).deleteById(anyLong());
 		verifyNoMoreInteractions(repo);
