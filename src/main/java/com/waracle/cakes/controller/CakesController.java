@@ -48,8 +48,9 @@ public class CakesController {
 		try {
 			cakes = service.getCakes();
 			if (cakes.isPresent()) {
-				List<CakeDTO> returnCakeDTOs = cakes.get().stream().map(cake -> CakeDTO.builder().title(cake.title)
-						.description(cake.description).image(cake.image).build()).collect(Collectors.toList());
+				List<CakeDTO> returnCakeDTOs = cakes.get().stream().map(cake -> CakeDTO.builder().id(cake.id)
+						.title(cake.title).description(cake.description).image(cake.image).build())
+						.collect(Collectors.toList());
 				return new ResponseEntity<>(returnCakeDTOs, HttpStatus.OK);
 			} else {
 				log.error("failed to get cakes");
@@ -106,8 +107,9 @@ public class CakesController {
 					.description(cakeDTO.description).image(cakeDTO.image).build()).collect(Collectors.toList());
 			addedCakes = Optional.ofNullable(service.saveCakes(cakes));
 			if (addedCakes.isPresent()) {
-				List<CakeDTO> returnCakeDTOs = addedCakes.get().stream().map(cake -> CakeDTO.builder().title(cake.title)
-						.description(cake.description).image(cake.image).build()).collect(Collectors.toList());
+				List<CakeDTO> returnCakeDTOs = addedCakes.get().stream().map(cake -> CakeDTO.builder().id(cake.id)
+						.title(cake.title).description(cake.description).image(cake.image).build())
+						.collect(Collectors.toList());
 				return new ResponseEntity<>(returnCakeDTOs, HttpStatus.OK);
 			} else {
 				log.error("failed to add cakes");
