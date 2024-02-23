@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -81,6 +82,7 @@ public class CakesController {
 	}
 
 	@PostMapping("/addCake")
+	@PreAuthorize("hasAuthority('ADMIN')")
 	public ResponseEntity<CakeDTO> addCake(@Valid @RequestBody CakeDTO cakeDTO) {
 		Optional<Cake> addedCake;
 		try {
@@ -100,6 +102,7 @@ public class CakesController {
 	}
 
 	@PostMapping("/addCakes")
+	@PreAuthorize("hasAuthority('ADMIN')")
 	public ResponseEntity<List<CakeDTO>> addCakes(@Valid @RequestBody List<CakeDTO> cakeDTOs) {
 		Optional<List<Cake>> addedCakes;
 		try {
@@ -122,6 +125,7 @@ public class CakesController {
 	}
 
 	@PutMapping("/updateCake")
+	@PreAuthorize("hasAuthority('ADMIN')")
 	public ResponseEntity<CakeDTO> updateCake(@RequestBody CakeDTO cakeDTO) {
 		Optional<Cake> updatedCake;
 		try {
@@ -141,6 +145,7 @@ public class CakesController {
 	}
 
 	@DeleteMapping("/delete/{id}")
+	@PreAuthorize("hasAuthority('ADMIN')")
 	public ResponseEntity<HttpStatus> deleteCake(@PathVariable Long id) {
 		try {
 			service.deleteCake(id);

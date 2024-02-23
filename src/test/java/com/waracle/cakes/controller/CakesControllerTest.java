@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -40,17 +41,19 @@ public class CakesControllerTest {
 	private ObjectMapper objectMapper;
 
 	@Test
-	public void should_add_cake() throws Exception {
+	@WithMockUser(username = "user", roles = { "USER" })
+	public void non_admin_should_not_be_able_to_add_cake() throws Exception {
 		Cake cake = Cake.builder().id(1L).title("New Cake").description("new cake description").image(
 				"https://media.istockphoto.com/id/1136810581/photo/birthday-cake-decorated-with-colorful-sprinkles-and-ten-candles.webp?b=1&s=170667a&w=0&k=20&c=OphwD8QZhsghyG5W7P8MzD1uw9Nze38zf6JvdDxcjRU=")
 				.build();
 		CakeDTO cakeDTO = modelMapper.map(cake, CakeDTO.class);
 		when(cakesService.saveCake(cake)).thenReturn(cake);
 		mockMvc.perform(post("/addCake").contentType(MediaType.APPLICATION_JSON)
-				.content(objectMapper.writeValueAsString(cakeDTO))).andExpect(status().isOk()).andDo(print());
+				.content(objectMapper.writeValueAsString(cakeDTO))).andExpect(status().isForbidden()).andDo(print());
 	}
 
 	@Test
+	@WithMockUser(username = "user1", roles = { "USER" })
 	public void should_get_cake_by_id() throws Exception {
 		long id = 1L;
 		Cake cake = Cake.builder().id(1L).title("New Cake").description("new cake description").image(
@@ -64,6 +67,7 @@ public class CakesControllerTest {
 	}
 
 	@Test
+	@WithMockUser(username = "user1", roles = { "USER" })
 	public void should_get_all_cakes() throws Exception {
 
 		Cake cake1 = Cake.builder().id(1L).title("New Cake1").description("new cake1 description").image(
@@ -79,7 +83,8 @@ public class CakesControllerTest {
 	}
 
 	@Test
-	public void should_update_a_cake_matching_id() throws Exception {
+	@WithMockUser(username = "user", roles = { "USER" })
+	public void non_admin_user_should_not_be_able_to_update_a_cake() throws Exception {
 
 		Cake cake = Cake.builder().id(1L).title("Cake").description("cake description").image("/path/to/new/image1")
 				.build();
@@ -90,7 +95,7 @@ public class CakesControllerTest {
 
 		when(cakesService.updateCake(cake)).thenReturn(updatedCake);
 		mockMvc.perform(put("/updateCake").contentType(MediaType.APPLICATION_JSON)
-				.content(objectMapper.writeValueAsString(cakeDTO))).andExpect(status().isOk()).andDo(print());
+				.content(objectMapper.writeValueAsString(cakeDTO))).andExpect(status().isForbidden()).andDo(print());
 	}
 
 }
